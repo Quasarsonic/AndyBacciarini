@@ -1,0 +1,164 @@
+/* Base resets */
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  color: #e6e6e6;
+  background: #0a0a0b;
+  overflow: hidden;
+}
+
+/* Animated background grid with moving light lines */
+.background {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  background: radial-gradient(1200px 600px at 80% -10%, rgba(0, 170, 255, 0.15), rgba(0, 0, 0, 0)),
+              radial-gradient(800px 400px at 10% 110%, rgba(255, 0, 170, 0.12), rgba(0, 0, 0, 0)),
+              #050507;
+}
+
+/* Grid */
+.background::before {
+  content: "";
+  position: absolute;
+  inset: -200% -200%; /* large to allow rotation without edges showing */
+  background-image: linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size: 60px 60px, 60px 60px;
+  transform: rotate(12deg);
+  animation: subtle-pan 60s linear infinite;
+}
+
+@keyframes subtle-pan {
+  0% { transform: rotate(12deg) translate3d(0, 0, 0); }
+  100% { transform: rotate(12deg) translate3d(-200px, -200px, 0); }
+}
+
+/* Moving light lines */
+.background::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    /* diagonal sweeping beams */
+    repeating-linear-gradient(120deg,
+      rgba(255,255,255,0) 0px,
+      rgba(255,255,255,0) 120px,
+      rgba(0, 180, 255, 0.18) 160px,
+      rgba(255,255,255,0) 220px
+    ),
+    repeating-linear-gradient(300deg,
+      rgba(255,255,255,0) 0px,
+      rgba(255,255,255,0) 140px,
+      rgba(255, 0, 170, 0.14) 180px,
+      rgba(255,255,255,0) 240px
+    );
+  filter: blur(0.3px) saturate(130%);
+  mix-blend-mode: screen;
+  animation: beams-move 18s linear infinite;
+}
+
+@keyframes beams-move {
+  0% { background-position: 0 0, 0 0; }
+  100% { background-position: 1200px 800px, -1600px -1000px; }
+}
+
+/* Mouse-reactive light blobs (Huly-style) */
+.light {
+  position: absolute;
+  width: 65vmax;
+  height: 65vmax;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.24;
+  pointer-events: none;
+  transform: translate3d(-50%, -50%, 0);
+  transition: opacity 300ms ease;
+}
+
+.light--primary {
+  background: radial-gradient(closest-side, rgba(0, 190, 255, 0.9), rgba(0, 190, 255, 0) 70%);
+  mix-blend-mode: screen;
+}
+
+.light--accent {
+  background: radial-gradient(closest-side, rgba(255, 0, 180, 0.7), rgba(255, 0, 180, 0) 70%);
+  mix-blend-mode: screen;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .light { display: none; }
+}
+
+/* Content */
+.content {
+  position: relative;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 24px;
+}
+
+.content h1 {
+  margin: 0 0 10px;
+  font-size: clamp(2rem, 6vw, 4rem);
+  letter-spacing: -0.02em;
+}
+
+.content p {
+  margin: 0;
+  opacity: 0.85;
+}
+
+.actions { margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+
+/* Huly-like Buttons */
+.btn {
+  --ring: 0 190 255;
+  --bg: 12, 14, 18;
+  --fg: 230, 235, 240;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  color: rgb(var(--fg));
+  background: rgba(var(--bg), 0.6);
+  text-decoration: none;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  backdrop-filter: blur(6px);
+  transition: transform 120ms ease, border-color 200ms ease, background 200ms ease, box-shadow 200ms ease;
+}
+
+.btn::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(120px 60px at var(--mx,50%) var(--my,50%), rgba(var(--ring), 0.6), rgba(255,255,255,0) 60%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+}
+
+.btn:hover { transform: translateY(-1px); border-color: rgba(255,255,255,0.18); }
+.btn:active { transform: translateY(0); }
+
+.btn--primary {
+  background: linear-gradient(180deg, rgba(0, 190, 255, 0.22), rgba(0, 0, 0, 0))
+              ,rgba(var(--bg), 0.6);
+  box-shadow: 0 10px 30px -10px rgba(0, 190, 255, 0.35), inset 0 0 0 1px rgba(255,255,255,0.06);
+}
+
+.btn--ghost { background: rgba(20,22,26,0.4); }
+
+
